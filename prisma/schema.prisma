@@ -1,0 +1,363 @@
+// Generated schema — modeled after beautyhqio conventions.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  active       Boolean @default(true)
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(ANALYST)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  ANALYST
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actorName String?
+  action    String
+  entity    String
+  entityId  String?
+  detail    String?
+  createdAt DateTime @default(now())
+}
+
+model WorkflowAnalysis {
+ id String @id @default(cuid())
+ actorId String
+ workflow String
+ subjectEntity String
+ subjectId String
+ input Json
+ evidence Json
+ evidenceHash String
+ result Json
+ model String
+ receipt String?
+ createdAt DateTime @default(now())
+ @@index([workflow, createdAt])
+}
+model RecordReview {
+ id String @id @default(cuid())
+ actorId String
+ entity String
+ entityId String
+ version String
+ reason String
+ createdAt DateTime @default(now())
+ @@unique([entity, entityId, version, actorId])
+}
+model UsageBucket {
+ id String @id
+ calls Int
+}
+model IssuedCredential {
+ token String @id
+ entity String
+ entityId String
+ version String
+ assertion Json
+ createdAt DateTime @default(now())
+ revokedAt DateTime?
+ @@index([entity, entityId, createdAt])
+}
+
+model DomainArtifact {
+ id String @id @default(cuid())
+ subjectEntity String
+ subjectId String
+ title String
+ content String
+ contentHash String
+ actorId String
+ approvedBy String?
+ createdAt DateTime @default(now())
+ @@index([subjectEntity, subjectId])
+}
+
+model RecordApproval {
+ id String @id
+ version String
+}
+model DomainExecution {
+ id String @id
+ actorId String
+ connectorId String
+ action String
+ subjectEntity String
+ subjectId String
+ version String
+ status String
+ result Json?
+ createdAt DateTime @default(now())
+}
+
+model WorkSession {
+ id String @id @default(cuid())
+ actorId String
+ respondentId String
+ subjectEntity String
+ subjectId String
+ questions Json
+ answers Json
+ currentQuestion String?
+ status String
+ deadline DateTime
+ createdAt DateTime @default(now())
+ @@index([respondentId, createdAt])
+}
+model SessionMedia {
+ id String @id @default(cuid())
+ sessionId String
+ questionId String
+ actorId String
+ contentType String
+ bytes Bytes
+ contentHash String
+ createdAt DateTime @default(now())
+ @@index([sessionId])
+}
+
+model AppSetting {
+ id String @id
+ value Json
+ updatedAt DateTime @updatedAt
+}
+
+model DosimetryProgram {
+ id String @id @default(cuid())
+ name String
+ licenseNumber String
+ employer String
+ radiationOfficer String
+ periodStart DateTime
+ periodEnd DateTime
+ status String @default("Draft")
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ inverseMonitoredWorker_dosimetryProgramId MonitoredWorker[] @relation("MonitoredWorker_dosimetryProgramId")
+ inverseDosimeterBadge_dosimetryProgramId DosimeterBadge[] @relation("DosimeterBadge_dosimetryProgramId")
+ inverseDoseResult_dosimetryProgramId DoseResult[] @relation("DoseResult_dosimetryProgramId")
+ inversePriorExposure_dosimetryProgramId PriorExposure[] @relation("PriorExposure_dosimetryProgramId")
+ inverseDoseThreshold_dosimetryProgramId DoseThreshold[] @relation("DoseThreshold_dosimetryProgramId")
+ inverseDoseInvestigation_dosimetryProgramId DoseInvestigation[] @relation("DoseInvestigation_dosimetryProgramId")
+ inverseWorkerAcknowledgement_dosimetryProgramId WorkerAcknowledgement[] @relation("WorkerAcknowledgement_dosimetryProgramId")
+ inverseVendorReconciliation_dosimetryProgramId VendorReconciliation[] @relation("VendorReconciliation_dosimetryProgramId")
+ inverseOperationalTask_dosimetryProgramId OperationalTask[] @relation("OperationalTask_dosimetryProgramId")
+ inverseRuleVersion_dosimetryProgramId RuleVersion[] @relation("RuleVersion_dosimetryProgramId")
+ inverseDocumentRequirement_dosimetryProgramId DocumentRequirement[] @relation("DocumentRequirement_dosimetryProgramId")
+}
+
+model MonitoredWorker {
+ id String @id @default(cuid())
+ name String
+ employeeCode String
+ department String
+ jobTitle String
+ startedAt DateTime
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedDosimetryProgramId DosimetryProgram @relation("MonitoredWorker_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+ inverseDosimeterBadge_monitoredWorkerId DosimeterBadge[] @relation("DosimeterBadge_monitoredWorkerId")
+ inversePriorExposure_monitoredWorkerId PriorExposure[] @relation("PriorExposure_monitoredWorkerId")
+ inverseDoseInvestigation_monitoredWorkerId DoseInvestigation[] @relation("DoseInvestigation_monitoredWorkerId")
+ inverseWorkerAcknowledgement_monitoredWorkerId WorkerAcknowledgement[] @relation("WorkerAcknowledgement_monitoredWorkerId")
+}
+
+model DosimeterBadge {
+ id String @id @default(cuid())
+ title String
+ monitoredWorkerId String
+ badgeNumber String
+ vendor String
+ assignedAt DateTime
+ returnedAt DateTime?
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedMonitoredWorkerId MonitoredWorker @relation("DosimeterBadge_monitoredWorkerId", fields: [monitoredWorkerId], references: [id], onDelete: Restrict)
+ linkedDosimetryProgramId DosimetryProgram @relation("DosimeterBadge_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+ inverseDoseResult_dosimeterBadgeId DoseResult[] @relation("DoseResult_dosimeterBadgeId")
+}
+
+model DoseResult {
+ id String @id @default(cuid())
+ title String
+ dosimeterBadgeId String
+ periodStart DateTime
+ periodEnd DateTime
+ doseType String
+ doseMsv Float
+ sourceReference String
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedDosimeterBadgeId DosimeterBadge @relation("DoseResult_dosimeterBadgeId", fields: [dosimeterBadgeId], references: [id], onDelete: Restrict)
+ linkedDosimetryProgramId DosimetryProgram @relation("DoseResult_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+}
+
+model PriorExposure {
+ id String @id @default(cuid())
+ title String
+ monitoredWorkerId String
+ employer String
+ periodStart DateTime
+ periodEnd DateTime
+ doseMsv Float
+ evidence String
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedMonitoredWorkerId MonitoredWorker @relation("PriorExposure_monitoredWorkerId", fields: [monitoredWorkerId], references: [id], onDelete: Restrict)
+ linkedDosimetryProgramId DosimetryProgram @relation("PriorExposure_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+}
+
+model DoseThreshold {
+ id String @id @default(cuid())
+ title String
+ doseType String
+ thresholdMsv Float
+ averagingPeriod String
+ ruleVersion String
+ effectiveAt DateTime
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedDosimetryProgramId DosimetryProgram @relation("DoseThreshold_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+}
+
+model DoseInvestigation {
+ id String @id @default(cuid())
+ title String
+ monitoredWorkerId String
+ openedAt DateTime
+ reason String
+ findings String
+ action String
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedMonitoredWorkerId MonitoredWorker @relation("DoseInvestigation_monitoredWorkerId", fields: [monitoredWorkerId], references: [id], onDelete: Restrict)
+ linkedDosimetryProgramId DosimetryProgram @relation("DoseInvestigation_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+}
+
+model WorkerAcknowledgement {
+ id String @id @default(cuid())
+ title String
+ monitoredWorkerId String
+ acknowledgedAt DateTime
+ reportReference String
+ evidence String
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedMonitoredWorkerId MonitoredWorker @relation("WorkerAcknowledgement_monitoredWorkerId", fields: [monitoredWorkerId], references: [id], onDelete: Restrict)
+ linkedDosimetryProgramId DosimetryProgram @relation("WorkerAcknowledgement_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+}
+
+model VendorReconciliation {
+ id String @id @default(cuid())
+ title String
+ vendor String
+ receivedAt DateTime
+ expectedBadges Int
+ receivedResults Int
+ discrepancies String
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedDosimetryProgramId DosimetryProgram @relation("VendorReconciliation_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+}
+
+model OperationalTask {
+ id String @id @default(cuid())
+ title String
+ owner String
+ priority String
+ startAt DateTime
+ dueAt DateTime
+ done Boolean
+ notes String?
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedDosimetryProgramId DosimetryProgram @relation("OperationalTask_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+}
+
+model RuleVersion {
+ id String @id @default(cuid())
+ title String
+ jurisdiction String
+ version String
+ effectiveAt DateTime
+ expiresAt DateTime?
+ sourceUrl String
+ requirementText String
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedDosimetryProgramId DosimetryProgram @relation("RuleVersion_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+}
+
+model DocumentRequirement {
+ id String @id @default(cuid())
+ title String
+ category String
+ requiredBy DateTime
+ sourceReference String
+ evidenceReference String?
+ reviewNotes String?
+ status String @default("Draft")
+ dosimetryProgramId String
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+ @@index([dosimetryProgramId])
+ linkedDosimetryProgramId DosimetryProgram @relation("DocumentRequirement_dosimetryProgramId", fields: [dosimetryProgramId], references: [id], onDelete: Restrict)
+}

@@ -1,0 +1,614 @@
+{
+  "DosimetryProgram": {
+    "name": "DosimetryProgram",
+    "fields": [
+      {
+        "name": "name",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "licenseNumber",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "employer",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "radiationOfficer",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "periodStart",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "periodEnd",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      }
+    ]
+  },
+  "MonitoredWorker": {
+    "name": "MonitoredWorker",
+    "fields": [
+      {
+        "name": "name",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "employeeCode",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "department",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "jobTitle",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "startedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  },
+  "DosimeterBadge": {
+    "name": "DosimeterBadge",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "monitoredWorkerId",
+        "kind": "string",
+        "required": true,
+        "relation": "MonitoredWorker"
+      },
+      {
+        "name": "badgeNumber",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "vendor",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "assignedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "returnedAt",
+        "kind": "date",
+        "required": false
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  },
+  "DoseResult": {
+    "name": "DoseResult",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimeterBadgeId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimeterBadge"
+      },
+      {
+        "name": "periodStart",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "periodEnd",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "doseType",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "doseMsv",
+        "kind": "number",
+        "required": true,
+        "min": 0
+      },
+      {
+        "name": "sourceReference",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  },
+  "PriorExposure": {
+    "name": "PriorExposure",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "monitoredWorkerId",
+        "kind": "string",
+        "required": true,
+        "relation": "MonitoredWorker"
+      },
+      {
+        "name": "employer",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "periodStart",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "periodEnd",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "doseMsv",
+        "kind": "number",
+        "required": true,
+        "min": 0
+      },
+      {
+        "name": "evidence",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  },
+  "DoseThreshold": {
+    "name": "DoseThreshold",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "doseType",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "thresholdMsv",
+        "kind": "number",
+        "required": true,
+        "min": 0
+      },
+      {
+        "name": "averagingPeriod",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "ruleVersion",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "effectiveAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  },
+  "DoseInvestigation": {
+    "name": "DoseInvestigation",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "monitoredWorkerId",
+        "kind": "string",
+        "required": true,
+        "relation": "MonitoredWorker"
+      },
+      {
+        "name": "openedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "reason",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "findings",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "action",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  },
+  "WorkerAcknowledgement": {
+    "name": "WorkerAcknowledgement",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "monitoredWorkerId",
+        "kind": "string",
+        "required": true,
+        "relation": "MonitoredWorker"
+      },
+      {
+        "name": "acknowledgedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "reportReference",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "evidence",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  },
+  "VendorReconciliation": {
+    "name": "VendorReconciliation",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "vendor",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "receivedAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "expectedBadges",
+        "kind": "number",
+        "required": true,
+        "integer": true,
+        "min": 0
+      },
+      {
+        "name": "receivedResults",
+        "kind": "number",
+        "required": true,
+        "integer": true,
+        "min": 0
+      },
+      {
+        "name": "discrepancies",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  },
+  "OperationalTask": {
+    "name": "OperationalTask",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "owner",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "priority",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "startAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "dueAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "done",
+        "kind": "boolean",
+        "required": true
+      },
+      {
+        "name": "notes",
+        "kind": "string",
+        "required": false
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  },
+  "RuleVersion": {
+    "name": "RuleVersion",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "jurisdiction",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "version",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "effectiveAt",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "expiresAt",
+        "kind": "date",
+        "required": false
+      },
+      {
+        "name": "sourceUrl",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "requirementText",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  },
+  "DocumentRequirement": {
+    "name": "DocumentRequirement",
+    "fields": [
+      {
+        "name": "title",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "category",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "requiredBy",
+        "kind": "date",
+        "required": true
+      },
+      {
+        "name": "sourceReference",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "evidenceReference",
+        "kind": "string",
+        "required": false
+      },
+      {
+        "name": "reviewNotes",
+        "kind": "string",
+        "required": false
+      },
+      {
+        "name": "status",
+        "kind": "string",
+        "required": true
+      },
+      {
+        "name": "dosimetryProgramId",
+        "kind": "string",
+        "required": true,
+        "relation": "DosimetryProgram"
+      }
+    ],
+    "parent": {
+      "entity": "DosimetryProgram",
+      "field": "dosimetryProgramId"
+    }
+  }
+}

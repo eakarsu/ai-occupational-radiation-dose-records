@@ -1,0 +1,65 @@
+[
+  {
+    "id": "domain-calculation",
+    "title": "Occupational dose aggregation",
+    "operation": "dose",
+    "example": {
+      "ruleSource": "Fictional demonstration rule v1; replace with reviewed applicable terms",
+      "doseType": "deep-dose equivalent",
+      "unit": "mSv",
+      "threshold": 5,
+      "readings": [
+        {
+          "id": "badge-Jan",
+          "value": 0.2
+        },
+        {
+          "id": "badge-Feb",
+          "value": 0.3
+        }
+      ]
+    },
+    "description": "Sum non-overlapping vendor measurements of one dose type and unit; compare a supplied review threshold."
+  },
+  {
+    "id": "evidence-check",
+    "operation": "evidence",
+    "title": "Dosimetry Program evidence checklist",
+    "description": "Check source presence against an explicitly supplied document list; reviewer assesses adequacy.",
+    "example": {
+      "requirements": [
+        {
+          "id": "source-1",
+          "requirement": "Monitored Worker evidence",
+          "evidence": "Example source reference"
+        },
+        {
+          "id": "source-2",
+          "requirement": "Reviewed rule version",
+          "evidence": ""
+        }
+      ]
+    }
+  },
+  {
+    "id": "deadline-check",
+    "operation": "deadlines",
+    "title": "Operational deadline queue",
+    "description": "Compute overdue items from entered dates and completed flags; no external notifications.",
+    "example": {
+      "asOf": "2026-10-20T12:00:00Z",
+      "items": [
+        {
+          "id": "review-1",
+          "dueAt": "2026-10-18T00:00:00Z",
+          "completed": false
+        },
+        {
+          "id": "follow-up-1",
+          "dueAt": "2026-10-23T00:00:00Z",
+          "completed": false
+        }
+      ]
+    }
+  }
+]
