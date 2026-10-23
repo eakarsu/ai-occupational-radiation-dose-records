@@ -27,3 +27,20 @@ test('CSV escapes spreadsheet formulas and quotes',()=>{const s=toCsv([{name:'=H
 test('AI evidence keeps long text and rejects invented citations',()=>{const text='x'.repeat(500)+' critical ending';assert(canonicalEvidence([{entity:'Source',record:{id:'a',text}}]).text.includes('critical ending'));assert.throws(()=>parseModelResult(JSON.stringify({status:'draft',summary:'Review',findings:[],recommendations:[],citations:['invented'],limitations:[]}),new Set()),/not supplied/);});
 
 test('domain-specific reference result for this application',()=>{const tool=tools[0];assert.deepEqual(runTool(tool.id,tool.example)["total"],0.5);});
+
+test('dose insights are deterministic fallback over own records, preserving zero', async () => {
+  const { buildDoseInsight, INSIGHT_TYPES } = await import('../src/lib/ai-insights');
+  assert.equal(INSIGHT_TYPES.length, 3);
+  const data = { doseResults: [{ doseMsv: 0, doseType: 'Whole body', status: 'Draft' }], investigations: [], reconciliations: [{ expectedBadges: 2, receivedResults: 2, status: 'Draft' }], openTasks: 0, overdueTasks: 0 };
+  for (const t of INSIGHT_TYPES) { const i = buildDoseInsight(t, data); assert.equal(i.aiGenerated, false); assert.equal(i.mode, 'deterministic-fallback'); assert.ok(i.sections.some(s => s.title === 'Recorded dose total (mSv)' && s.detail === '0')); assert.ok(i.sections.some(s => s.title === 'Open tasks' && s.detail === '0')); }
+  assert.throws(() => buildDoseInsight('nope', data), /Unknown insight/);
+});
+test('staff tasks, record search and export routes stay authenticated', async () => {
+  const fs = await import('node:fs');
+  const tasks = fs.readFileSync(new URL('../src/app/api/tasks/route.ts', import.meta.url), 'utf8');
+  assert.ok(tasks.includes('requireUser'));
+  const rec = fs.readFileSync(new URL('../src/app/api/records/[entity]/route.ts', import.meta.url), 'utf8');
+  assert.ok(rec.includes('authorize') && rec.includes('"q"'));
+  const exp = fs.readFileSync(new URL('../src/app/api/export/[entity]/route.ts', import.meta.url), 'utf8');
+  assert.ok(exp.includes('csv') && exp.includes('authorize'));
+});
